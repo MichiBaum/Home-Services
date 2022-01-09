@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:master
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+    environment:
+      TZ: 'Europe/Zurich'
+      DNSSEC: "true"
+      DNS_BOGUS_PRIV: "true"
+      ServerIP: 192.168.1.102
+      WEBPASSWORD: test1234
+      TEMPERATUREUNIT: "c"
+      WEBUIBOXEDLAYOUT: "boxed"
+    volumes:
+      - './dns/etc-pihole/:/etc/pihole/'
+      - './dns/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    cap_add:
+      - NET_ADMIN
+    restart: always
+    networks: 
+      - home-network
+
+  heimdall:
+    container_name: heimdall
+    image: ghcr.io/linuxserver/heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Zurich
+    volumes:
+      - ./config:/config
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    restart: unless-stopped
+    networks:
+      - home-network
+
+networks:
+  home-network:
+    name: home-network
+    driver: bridge
