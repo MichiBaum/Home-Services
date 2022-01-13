@@ -3,7 +3,7 @@ version: '3.7'
 services:
   pihole:
     container_name: pihole
-    image: pihole/pihole:master
+    image: pihole/pihole:latest
     dns:
       - 127.0.0.1
       - 8.8.8.8
